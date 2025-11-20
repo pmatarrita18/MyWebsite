@@ -1,0 +1,15 @@
+{
+  "name": "mywebsite",
+  "version": "1.0.0",
+  "description": "Personal website with retro Tron aesthetic",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "Pedro Matarrita",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

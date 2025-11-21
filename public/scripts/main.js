@@ -5,6 +5,61 @@
 
 // V2 - Stat bars removed
 
+// ===== VIDEO LAZY LOADING =====
+const loadedVideos = new Set();
+
+function lazyLoadVideo(videoElement) {
+    if (!videoElement || loadedVideos.has(videoElement.id)) {
+        return Promise.resolve();
+    }
+
+    return new Promise((resolve) => {
+        // If video is already loaded
+        if (videoElement.readyState >= 3) {
+            loadedVideos.add(videoElement.id);
+            resolve();
+            return;
+        }
+
+        // Set preload to auto to start loading
+        videoElement.preload = 'auto';
+        videoElement.load();
+
+        // Wait for video to be ready
+        videoElement.addEventListener('canplaythrough', () => {
+            loadedVideos.add(videoElement.id);
+            resolve();
+        }, { once: true });
+
+        // Fallback timeout
+        setTimeout(() => {
+            loadedVideos.add(videoElement.id);
+            resolve();
+        }, 3000);
+    });
+}
+
+// Lazy load videos that come into view
+function setupVideoIntersectionObserver() {
+    const lazyVideos = document.querySelectorAll('[data-lazy-video]');
+
+    if ('IntersectionObserver' in window) {
+        const videoObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const video = entry.target;
+                    lazyLoadVideo(video).then(() => {
+                        video.play().catch(e => console.log('Video autoplay prevented:', e));
+                    });
+                    videoObserver.unobserve(video);
+                }
+            });
+        }, { rootMargin: '50px' });
+
+        lazyVideos.forEach(video => videoObserver.observe(video));
+    }
+}
+
 // ===== EASTER EGG TRIGGER =====
 let secretSequence = [];
 const secretCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
@@ -514,9 +569,11 @@ const blockSystem = {
                 clone.style.objectFit = 'cover';
                 clone.style.borderRadius = '8px';
 
-                // If it's a video, play it
+                // If it's a video, lazy load then play it
                 if (clone.tagName === 'VIDEO') {
-                    clone.play();
+                    lazyLoadVideo(mediaElement).then(() => {
+                        clone.play().catch(e => console.log('Video play failed:', e));
+                    });
                 }
 
                 imageContainer.appendChild(clone);
@@ -858,6 +915,7 @@ document.addEventListener('DOMContentLoaded', () => {
     processCharacterSprite(); // Remove background from sprite sheet
     processSamusSprites(); // Remove background from Samus sprites
     setupCharacterControls();
+    setupVideoIntersectionObserver(); // Lazy load videos
 
     // Listen for secret code
     document.addEventListener('keydown', (e) => {

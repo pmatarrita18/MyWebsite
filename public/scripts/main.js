@@ -3,22 +3,7 @@
    Foundation Track - Basic Interactions
    ============================================ */
 
-// ===== STAT BAR ANIMATIONS =====
-function animateStatBars() {
-    const statBars = document.querySelectorAll('.stat-fill');
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const statValue = entry.target.dataset.stat;
-                entry.target.style.width = statValue + '%';
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.5 });
-
-    statBars.forEach(bar => observer.observe(bar));
-}
+// V2 - Stat bars removed
 
 // ===== EASTER EGG TRIGGER =====
 let secretSequence = [];
@@ -44,17 +29,7 @@ function hideEasterEgg() {
     easterEgg.classList.add('hidden');
 }
 
-// ===== SMOOTH SCROLL FOR PRESS START =====
-function setupPressStart() {
-    const pressStart = document.querySelector('.press-start');
-    if (pressStart) {
-        pressStart.addEventListener('click', () => {
-            document.getElementById('level-1').scrollIntoView({
-                behavior: 'smooth'
-            });
-        });
-    }
-}
+// V2 - Press Start removed
 
 // ===== COIN INSERTION =====
 function setupCoinInsertion() {
@@ -72,24 +47,16 @@ function setupCoinInsertion() {
                 titleWrapper.classList.add('rippling');
             }, 600);
 
-            // After animation completes, scroll to next section
+            // Remove classes after animation completes
             setTimeout(() => {
-                document.getElementById('level-1').scrollIntoView({
-                    behavior: 'smooth'
-                });
-
-                // Remove classes after scroll starts
-                setTimeout(() => {
-                    coinWrapper.classList.remove('inserting');
-                    titleWrapper.classList.remove('rippling');
-                }, 500);
-            }, 1200); // Match coin drop duration
+                coinWrapper.classList.remove('inserting');
+                titleWrapper.classList.remove('rippling');
+            }, 1700);
         });
     }
 }
 
-// ===== MINI GAME INIT =====
-// Game initialization is handled in game.js
+// V2 - Game removed
 
 // ===== EASTER EGG CLOSE BUTTON =====
 function setupEasterEggClose() {
@@ -316,21 +283,581 @@ function setupScrollAnimations() {
     });
 }
 
+// ===== PROCESS CHARACTER SPRITE - REMOVE BACKGROUND =====
+function processCharacterSprite() {
+    const character = document.getElementById('character');
+    if (!character) return;
+
+    const img = new Image();
+    img.onload = function() {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+
+        // Draw original image
+        ctx.drawImage(img, 0, 0);
+
+        // Get image data
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+
+        // Remove light background pixels (make them transparent)
+        for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+
+            // If pixel is light gray/white (threshold 220), make it transparent
+            if (r > 220 && g > 220 && b > 220) {
+                data[i + 3] = 0; // Set alpha to 0 (transparent)
+            }
+        }
+
+        // Put modified image data back
+        ctx.putImageData(imageData, 0, 0);
+
+        // Use canvas as background image
+        character.style.backgroundImage = `url(${canvas.toDataURL()})`;
+    };
+    img.src = '/img/characterSpriteSheet.jpg';
+}
+
+// ===== COIN COLLECTION SYSTEM =====
+const coinSystem = {
+    coins: [],
+    collected: false,
+
+    init() {
+        const coinElements = document.querySelectorAll('.collectible-coin');
+        const gameWorld = document.getElementById('gameWorld');
+
+        this.coins = Array.from(coinElements).map(el => {
+            const rect = el.getBoundingClientRect();
+            const worldRect = gameWorld.getBoundingClientRect();
+            const left = rect.left - worldRect.left;
+            const bottom = el.style.bottom ? parseFloat(el.style.bottom) : 0;
+
+            return {
+                element: el,
+                x: left,
+                y: bottom,
+                width: 60,
+                height: 60,
+                collected: false
+            };
+        });
+
+        console.log('Coins initialized:', this.coins.length);
+    },
+
+    checkCollision(charX, charY, charWidth, charHeight) {
+        if (this.collected) return false;
+
+        for (let coin of this.coins) {
+            if (coin.collected) continue;
+
+            // Check if character overlaps with coin
+            const horizontalOverlap = charX + charWidth > coin.x &&
+                                     charX < coin.x + coin.width;
+            const verticalOverlap = charY + charHeight > coin.y &&
+                                   charY < coin.y + coin.height;
+
+            if (horizontalOverlap && verticalOverlap) {
+                this.collectCoin(coin);
+                return true;
+            }
+        }
+        return false;
+    },
+
+    collectCoin(coin) {
+        coin.collected = true;
+        this.collected = true;
+
+        // Add collection animation
+        coin.element.style.transition = 'all 0.5s ease-out';
+        coin.element.style.transform = 'scale(2) translateY(-50px)';
+        coin.element.style.opacity = '0';
+
+        // Remove coin after animation
+        setTimeout(() => {
+            coin.element.remove();
+        }, 500);
+
+        // Remove platforms in this zone
+        setTimeout(() => {
+            const zonePlatforms = document.querySelectorAll('.zone-platform[data-zone="2"]');
+            zonePlatforms.forEach(platform => {
+                platform.style.transition = 'opacity 0.5s ease-out';
+                platform.style.opacity = '0';
+                setTimeout(() => {
+                    platform.remove();
+                    // Reinitialize platform system after removal
+                    platformSystem.init();
+                }, 500);
+            });
+        }, 600);
+
+        // Show zone content
+        setTimeout(() => {
+            const hiddenElements = document.querySelectorAll('.sidequest-zone .zone-hidden');
+            hiddenElements.forEach(el => {
+                el.style.transition = 'opacity 1s ease-in';
+                el.classList.remove('zone-hidden');
+                el.style.opacity = '1';
+            });
+
+            // Hide hint
+            const hint = document.querySelector('.coin-hint');
+            if (hint) {
+                hint.style.transition = 'opacity 0.5s ease-out';
+                hint.style.opacity = '0';
+                setTimeout(() => hint.remove(), 500);
+            }
+        }, 1200);
+
+        console.log('💰 Coin collected! Side quest unlocked!');
+    }
+};
+
+// ===== PROJECT BLOCKS SYSTEM =====
+const blockSystem = {
+    blocks: [],
+
+    init() {
+        const blockElements = document.querySelectorAll('.project-block');
+        const gameWorld = document.getElementById('gameWorld');
+
+        this.blocks = Array.from(blockElements).map(el => {
+            const rect = el.getBoundingClientRect();
+            const worldRect = gameWorld.getBoundingClientRect();
+            const left = rect.left - worldRect.left;
+            const bottom = el.style.bottom ? parseFloat(el.style.bottom) : 0;
+
+            return {
+                element: el,
+                x: left,
+                y: bottom,
+                width: 80,
+                height: 80,
+                hit: false,
+                info: el.querySelector('.block-info')
+            };
+        });
+
+        console.log('Project blocks initialized:', this.blocks.length);
+    },
+
+    checkHeadCollision(charX, charY, charWidth, charHeight, velocityY) {
+        // Check if character is jumping up (velocityY > 0) and hits block from below
+        for (let block of this.blocks) {
+            const charTop = charY + charHeight;
+            const blockBottom = block.y;
+            const blockTop = block.y + block.height;
+
+            // Check horizontal overlap
+            const horizontalOverlap = charX + charWidth > block.x &&
+                                     charX < block.x + block.width;
+
+            // Check if character's head is hitting block from below
+            const hitFromBelow = charTop >= blockBottom &&
+                                charTop <= blockTop &&
+                                velocityY > 0;
+
+            // Allow multiple hits - removed !block.hit check
+            if (horizontalOverlap && hitFromBelow) {
+                this.hitBlock(block);
+                return true;
+            }
+        }
+        return false;
+    },
+
+    hitBlock(block) {
+        // Trigger bounce animation
+        block.element.classList.remove('hit');
+        setTimeout(() => block.element.classList.add('hit'), 10);
+        setTimeout(() => block.element.classList.remove('hit'), 500);
+
+        // Get project data from block
+        const title = block.element.dataset.title;
+        const subtitle = block.element.dataset.subtitle;
+        const description = block.element.dataset.description;
+        const mediaId = block.element.dataset.media;
+
+        // Update zone content
+        const titleEl = document.getElementById('projectTitle');
+        const subtitleEl = document.getElementById('projectSubtitle');
+        const descriptionEl = document.getElementById('projectDescription');
+        const imageContainer = document.getElementById('projectImage');
+
+        if (titleEl) titleEl.textContent = title;
+        if (subtitleEl) subtitleEl.textContent = subtitle;
+        if (descriptionEl) descriptionEl.textContent = description;
+
+        // Update media display
+        if (imageContainer && mediaId) {
+            // Hide all media first
+            document.querySelectorAll('.project-media').forEach(media => {
+                media.style.display = 'none';
+            });
+
+            // Clear container and show selected media
+            imageContainer.innerHTML = '';
+            const mediaElement = document.getElementById(mediaId);
+            if (mediaElement) {
+                const clone = mediaElement.cloneNode(true);
+                clone.style.display = 'block';
+                clone.style.width = '100%';
+                clone.style.height = '100%';
+                clone.style.objectFit = 'cover';
+                clone.style.borderRadius = '8px';
+
+                // If it's a video, play it
+                if (clone.tagName === 'VIDEO') {
+                    clone.play();
+                }
+
+                imageContainer.appendChild(clone);
+            }
+        }
+    }
+};
+
+// ===== PLATFORM SYSTEM =====
+const platformSystem = {
+    platforms: [],
+
+    init() {
+        // Get all platform elements
+        const platformElements = document.querySelectorAll('.platform');
+        const gameWorld = document.getElementById('gameWorld');
+
+        this.platforms = Array.from(platformElements).map(el => {
+            // Get computed style to read CSS-defined positions
+            const computedStyle = window.getComputedStyle(el);
+            const rect = el.getBoundingClientRect();
+            const worldRect = gameWorld.getBoundingClientRect();
+
+            // Calculate position in world coordinates
+            const left = rect.left - worldRect.left;
+            const bottom = el.style.bottom ? parseFloat(el.style.bottom) : 0;
+
+            return {
+                element: el,
+                x: left,
+                width: rect.width,
+                height: 20,
+                bottom: bottom
+            };
+        });
+
+        console.log('Platforms initialized:', this.platforms.length);
+    },
+
+    checkCollision(charX, charY, charWidth, charHeight, velocityY) {
+        // charY is in "bottom" coordinates (pixels from bottom of screen)
+        // Platform bottom values are also in "bottom" coordinates
+        for (let platform of this.platforms) {
+            const platformTop = platform.bottom + 20; // Top surface of platform (bottom + height)
+
+            // Check horizontal overlap
+            const horizontalOverlap = charX + charWidth > platform.x &&
+                                     charX < platform.x + platform.width;
+
+            // Check if character is at platform level (within landing range)
+            const atPlatformLevel = charY <= platformTop + 15 && charY >= platformTop - 5;
+
+            if (horizontalOverlap && atPlatformLevel && velocityY <= 0) {
+                return platformTop; // Return platform surface Y position
+            }
+        }
+        return null;
+    }
+};
+
+// ===== CHARACTER MOVEMENT =====
+const characterController = {
+    element: null,
+    gameWorld: null,
+    position: 200, // Position in world coordinates (pixels)
+    isMovingLeft: false,
+    isMovingRight: false,
+    speed: 5,
+    minX: 0,
+    maxX: 0, // Will be calculated based on viewport width
+
+    // Jump properties
+    groundY: 20, // Default ground
+    positionY: 20,
+    velocityY: 0,
+    isJumping: false,
+    isFalling: false,
+    jumpPower: 15,
+    gravity: -0.6,
+    charWidth: 72,
+    charHeight: 84,
+
+    init() {
+        this.element = document.getElementById('character');
+        this.gameWorld = document.getElementById('gameWorld');
+        if (!this.element || !this.gameWorld) return;
+
+        // Calculate world bounds (4 zones × viewport width)
+        this.maxX = (window.innerWidth * 4) - 100;
+
+        // Start position (center of first zone)
+        this.position = window.innerWidth / 2;
+        this.positionY = 20;
+        this.updatePosition();
+        this.updateCamera();
+
+        // Update bounds on resize
+        window.addEventListener('resize', () => {
+            this.maxX = (window.innerWidth * 4) - 100;
+        });
+    },
+
+    startMoving(direction) {
+        if (direction === 'left') {
+            this.isMovingLeft = true;
+            this.element.classList.remove('walking-right');
+            this.element.classList.add('walking-left');
+        } else if (direction === 'right') {
+            this.isMovingRight = true;
+            this.element.classList.remove('walking-left');
+            this.element.classList.add('walking-right');
+        }
+    },
+
+    stopMoving(direction) {
+        if (direction === 'left') {
+            this.isMovingLeft = false;
+            if (!this.isMovingRight) {
+                this.element.classList.remove('walking-left');
+            }
+        } else if (direction === 'right') {
+            this.isMovingRight = false;
+            if (!this.isMovingLeft) {
+                this.element.classList.remove('walking-right');
+            }
+        }
+    },
+
+    jump() {
+        if (!this.isJumping && !this.isFalling) {
+            this.isJumping = true;
+            this.velocityY = this.jumpPower;
+            this.element.classList.add('jumping');
+            this.element.classList.remove('walking-left', 'walking-right');
+        }
+    },
+
+    update() {
+        // Horizontal movement
+        if (this.isMovingLeft) {
+            this.position -= this.speed;
+            if (this.position < this.minX) {
+                this.position = this.minX;
+            }
+        }
+        if (this.isMovingRight) {
+            this.position += this.speed;
+            if (this.position > this.maxX) {
+                this.position = this.maxX;
+            }
+        }
+
+        // Vertical movement (jump/gravity physics)
+        this.velocityY += this.gravity;
+        this.positionY += this.velocityY;
+
+        // Check coin collision
+        coinSystem.checkCollision(
+            this.position,
+            this.positionY,
+            this.charWidth,
+            this.charHeight
+        );
+
+        // Check block collision (head bump)
+        blockSystem.checkHeadCollision(
+            this.position,
+            this.positionY,
+            this.charWidth,
+            this.charHeight,
+            this.velocityY
+        );
+
+        // Check platform collision
+        const platformY = platformSystem.checkCollision(
+            this.position,
+            this.positionY,
+            this.charWidth,
+            this.charHeight,
+            this.velocityY
+        );
+
+        if (platformY !== null && this.velocityY <= 0) {
+            // Land on platform
+            this.positionY = platformY;
+            this.velocityY = 0;
+            this.isJumping = false;
+            this.isFalling = false;
+            this.element.classList.remove('jumping');
+        } else if (platformY === null && !this.isJumping) {
+            // Start falling if not on platform
+            this.isFalling = true;
+            this.element.classList.add('jumping');
+        }
+
+        // Ground check (minimum height)
+        if (this.positionY <= this.groundY) {
+            this.positionY = this.groundY;
+            this.velocityY = 0;
+            this.isJumping = false;
+            this.isFalling = false;
+            this.element.classList.remove('jumping');
+        }
+
+        this.updatePosition();
+        this.updateCamera();
+    },
+
+    updatePosition() {
+        if (!this.element) return;
+        this.element.style.left = this.position + 'px';
+        this.element.style.bottom = this.positionY + 'px';
+        this.element.style.transform = this.isMovingLeft ? 'scaleX(-1)' : 'scaleX(1)';
+    },
+
+    updateCamera() {
+        if (!this.gameWorld) return;
+
+        // Camera follows character (keep character in center-ish area)
+        const viewportCenter = window.innerWidth / 2;
+        const targetScroll = this.position - viewportCenter + (this.charWidth / 2);
+
+        // Clamp camera to world bounds (4 viewports total)
+        const maxScroll = (window.innerWidth * 4) - window.innerWidth;
+        const scroll = Math.max(0, Math.min(targetScroll, maxScroll));
+
+        this.gameWorld.style.transform = `translateX(-${scroll}px)`;
+    }
+};
+
+function setupZoneSkipButtons() {
+    const skipButtons = document.querySelectorAll('.zone-skip-btn');
+
+    skipButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const targetZone = parseInt(button.dataset.targetZone);
+            skipToZone(targetZone);
+        });
+    });
+}
+
+function skipToZone(zoneIndex) {
+    // Calculate target position (center of target zone + some offset)
+    const viewportWidth = window.innerWidth;
+    const targetPosition = (viewportWidth * zoneIndex) + (viewportWidth / 2);
+
+    // Disable controls during transition
+    const wasMovingLeft = characterController.isMovingLeft;
+    const wasMovingRight = characterController.isMovingRight;
+    characterController.isMovingLeft = false;
+    characterController.isMovingRight = false;
+
+    // Animate character position
+    const startPosition = characterController.position;
+    const distance = targetPosition - startPosition;
+    const duration = 1500; // 1.5 seconds
+    const startTime = Date.now();
+
+    function animateSkip() {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Easing function (ease-in-out)
+        const easeProgress = progress < 0.5
+            ? 4 * progress * progress * progress
+            : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+        // Update character position
+        characterController.position = startPosition + (distance * easeProgress);
+        characterController.positionY = characterController.groundY; // Keep on ground
+        characterController.updatePosition();
+        characterController.updateCamera();
+
+        if (progress < 1) {
+            requestAnimationFrame(animateSkip);
+        } else {
+            // Re-enable controls if they were active
+            if (wasMovingLeft) characterController.isMovingLeft = true;
+            if (wasMovingRight) characterController.isMovingRight = true;
+        }
+    }
+
+    animateSkip();
+    console.log(`🚀 Skipping to Zone ${zoneIndex}`);
+}
+
+function setupCharacterControls() {
+    // Initialize game systems
+    platformSystem.init();
+    blockSystem.init();
+    coinSystem.init();
+
+    // Then initialize character
+    characterController.init();
+
+    // Setup zone skip buttons
+    setupZoneSkipButtons();
+
+    // Keyboard controls
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            characterController.startMoving('left');
+        } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            characterController.startMoving('right');
+        } else if (e.key === 'ArrowUp' || e.key === ' ') {
+            e.preventDefault();
+            characterController.jump();
+        }
+    });
+
+    document.addEventListener('keyup', (e) => {
+        if (e.key === 'ArrowLeft') {
+            characterController.stopMoving('left');
+        } else if (e.key === 'ArrowRight') {
+            characterController.stopMoving('right');
+        }
+    });
+
+    // Animation loop
+    function animate() {
+        characterController.update();
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🎮 Tron Arcade Website Initialized');
+    console.log('🎮 Tron Arcade Website V2 - Initialized');
     console.log('💡 Easter Egg Hint: Try the Konami Code...');
+    console.log('🎮 Controls: Arrow keys to move, Space/Up Arrow to jump!');
 
     // Initialize features
-    animateStatBars();
-    setupPressStart();
-    setupCoinInsertion(); // Coin insertion interaction
     setupEasterEggClose();
     createFloatingStars();
-    processSamusSprites();
-    setupCustomCursor(); // Track 4
-    setupScrollAnimations(); // Track 4
-    initGame(); // Track 5 - Pixel Blaster
+    setupCustomCursor();
+    processCharacterSprite(); // Remove background from sprite sheet
+    processSamusSprites(); // Remove background from Samus sprites
+    setupCharacterControls();
 
     // Listen for secret code
     document.addEventListener('keydown', (e) => {

@@ -12,203 +12,176 @@
 
     <!-- Hero Section -->
     <section id="hero" class="hero">
-        <div class="container">
-            <div class="insert-coin-wrapper">
-                <div class="insert-coin">
-                    <span class="coin-icon">🪙</span>
-                    <span class="coin-text">Insert Coin</span>
-                    <span class="coin-icon">🪙</span>
-                    <div class="golden-coin"></div>
+        <!-- Game World Container -->
+        <div class="game-world" id="gameWorld">
+            <!-- Character Sprite -->
+            <div class="character" id="character"></div>
+
+            <!-- ZONE 1: HERO (0 - 100vw) -->
+            <div class="zone hero-zone" data-zone="0">
+                <!-- Name with Samus Sprites inline -->
+                <div class="hero-title-wrapper">
+                    <div class="samus-left"></div>
+                    <h1 class="glitch-text hero-name" data-text="Pedro Matarrita">Pedro Matarrita</h1>
+                    <div class="samus-right"></div>
                 </div>
-            </div>
 
-            <div class="hero-title-wrapper">
-                <div class="samus-sprite samus-left" aria-label="Samus sprite"></div>
-                <h1 class="glitch-text" data-text="Pedro Matarrita">Pedro Matarrita</h1>
-                <div class="samus-sprite samus-right" aria-label="Samus sprite"></div>
-                <div class="ripple-container">
-                    <div class="ripple ripple-1"></div>
-                    <div class="ripple ripple-2"></div>
-                    <div class="ripple ripple-3"></div>
+                <p class="hero-subtitle">Designer by day, developer by night—basically a full-time hybrid creature.</p>
+                <p class="zone-hint">→ Walk right to explore</p>
+
+                <!-- Zone skip button -->
+                <button class="zone-skip-btn" data-target-zone="1">Skip to Projects →</button>
+            </div>
+            <div class="platform ground-platform" data-zone="0"></div>
+
+            <!-- ZONE 2: PROJECTS (100vw - 200vw) -->
+            <div class="zone projects-zone" data-zone="1">
+                <div class="projects-header">
+                    <h2 class="zone-title" id="projectTitle">Projects</h2>
+                    <p class="zone-text" id="projectSubtitle">Jump and hit a block to explore!</p>
                 </div>
-            </div>
 
-            <p class="tagline">50% Designer × 50% Developer = 100% Cosmic</p>
-            <div class="press-start">Press Start to Continue</div>
-        </div>
-    </section>
-
-    <!-- Level 1: Character Stats (About Me) -->
-    <section id="level-1" class="level">
-        <div class="container">
-            <div class="level-header">
-                <span class="level-number">Level 01</span>
-                <h2>Character Stats</h2>
-            </div>
-
-            <div class="about-intro">
-                <p class="about-text">
-                    <span class="highlight">Designer by day, developer by night—basically a full-time hybrid creature.</span> I enjoy treating code like art and design like logic puzzles.
-                </p>
-                <p class="about-text">
-                    I began as a web developer, evolved into UI/UX, and now I'm studying at CIID in Italy, looking for new ways to fuse both worlds and make them tangible.
-                </p>
-                <p class="about-fun-fact">
-                    🎮 Fun fact: I'm obsessed with video games—they're the perfect fusion of art and code.
-                </p>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">🎨</div>
-                    <h3>Design</h3>
-                    <div class="stat-bar">
-                        <div class="stat-fill" data-stat="95"></div>
+                <!-- Project Display Area -->
+                <div class="project-display" id="projectDisplay">
+                    <div class="project-image-placeholder" id="projectImage">
+                        <p>Select a project above</p>
                     </div>
-                    <p>The artistic side of code. Blending form, function, and a touch of cosmic humor.</p>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">💻</div>
-                    <h3>Development</h3>
-                    <div class="stat-bar">
-                        <div class="stat-fill" data-stat="95"></div>
-                    </div>
-                    <p>The structured side of art. Building interactive systems that bring ideas to life.</p>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">🌲</div>
-                    <h3>Nature Connection</h3>
-                    <div class="stat-bar">
-                        <div class="stat-fill" data-stat="100"></div>
-                    </div>
-                    <p>Disconnecting from screens to reconnect with inspiration through movement and environment.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Level 2: Mission 01 (CIID Project) -->
-    <section id="level-2" class="level">
-        <div class="container">
-            <div class="level-header">
-                <span class="level-number">Level 02</span>
-                <h2>Mission 01</h2>
-            </div>
-            <div class="mission-card">
-                <div class="mission-status">COMPLETED</div>
-                <h3 class="mission-title">Sky Free - Reimagined</h3>
-                <p class="mission-question">How could you practice skiing, without going out?</p>
-                <p class="mission-brief">
-                    Built for the <span class="highlight">Electronics as Materials</span> class at CIID.
-                    We created an artifact that lets you play the classic game <em>SkiFree</em> using physical movement—no keyboard needed.
-                </p>
-                <p class="mission-brief">
-                    Using simple materials (wooden planks, marbles, and copper), we built a circuit that detects sliding motion.
-                    Tilt the planks like you're skiing, and watch your character carve down the slopes on screen. Physical play meets digital nostalgia.
-                </p>
-
-                <!-- Project Images -->
-                <div class="mission-images">
-                    <div class="mission-media-grid">
-                        <img src="/img/skyfree-1.jpeg" alt="Sky Free Project - Physical Setup" class="mission-media">
-                        <video src="/img/Skyfree-1.mov" controls class="mission-media" autoplay loop muted></video>
+                    <div class="project-details">
+                        <p class="project-description" id="projectDescription">
+                            Hit the blocks above with your head to learn about each project.
+                        </p>
                     </div>
                 </div>
 
-                <div class="mission-tags">
-                    <span class="tag">Interaction Design</span>
-                    <span class="tag">Prototyping</span>
-                    <span class="tag">Electronics</span>
-                </div>
-            </div>
-        </div>
-    </section>
+                <!-- Hidden project media -->
+                <video id="skyFreeVideo" class="project-media" style="display: none;" autoplay loop muted>
+                    <source src="/img/Skyfree-1.mov" type="video/mp4">
+                </video>
+                <video id="dataTransmitionVideo" class="project-media" style="display: none;" autoplay loop muted>
+                    <source src="/img/datatransmition.mov" type="video/mp4">
+                </video>
+                <video id="pinBallGoalVideo" class="project-media" style="display: none;" autoplay loop muted>
+                    <source src="/img/Pinball2.mp4" type="video/mp4">
+                </video>
 
-    <!-- Level 3: Side Quest (Hiking) -->
-    <section id="level-3" class="level">
-        <div class="container">
-            <div class="level-header">
-                <span class="level-number">Level 03</span>
-                <h2>Side Quest</h2>
+                <!-- Zone skip button -->
+                <button class="zone-skip-btn" data-target-zone="2">Skip to Side Quest →</button>
             </div>
-            <div class="side-quest-card">
-                <h3>Mountain Explorer & Star Chaser</h3>
-                <p>
-                    I've conquered the highest peaks in my country—<span class="highlight">Cerro Chirripó</span> and
-                    <span class="highlight">Volcán Arenal</span> are among my favorites. There's something about the thrill
-                    of those adventures that stays with you.
-                </p>
-                <p>
-                    Watching the stars from those places is incredible. It's a way to disconnect from the
-                    technical side of my craft and let new ideas flow through my body, movement, and the environment around me.
-                </p>
-                <p class="quest-philosophy">
-                    Nature isn't just inspiration—it's where I recharge my creative energy and find clarity beyond the screen.
-                </p>
-                <div class="quest-stats">
-                    <div class="quest-stat">
-                        <span class="quest-number">🏔️</span>
-                        <span class="quest-label">Highest Peaks</span>
-                        <span class="quest-detail">Costa Rica</span>
-                    </div>
-                    <div class="quest-stat">
-                        <span class="quest-number">⭐</span>
-                        <span class="quest-label">Stargazing</span>
-                        <span class="quest-detail">At Altitude</span>
-                    </div>
-                    <div class="quest-stat">
-                        <span class="quest-number">100%</span>
-                        <span class="quest-label">Adventure</span>
-                        <span class="quest-detail">Thrill Seeker</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Mini Game Section -->
-    <section id="mini-game" class="level">
-        <div class="container">
-            <div class="level-header">
-                <span class="level-number">Bonus</span>
-                <h2>Arcade Zone</h2>
+            <!-- Interactive Project Blocks (aligned horizontally at bottom) -->
+            <div class="project-block" data-zone="1" data-project="0"
+                 data-title="1. Skii Free"
+                 data-subtitle="Electronics"
+                 data-description="SkiFree explored how electronics can deepen an interactive experience. By transforming a classic skiing game into a physical interface, we created an artifact that makes the user feel more like they're truly on the slopes."
+                 data-media="skyFreeVideo"
+                 style="left: calc(100vw + (50vw - 190px)); bottom: 120px;">
+                <div class="block-icon">1</div>
             </div>
-            <div class="game-container">
-                <!-- Game HUD -->
-                <div class="game-hud">
-                    <div class="hud-item">
-                        <span class="hud-label">TIME</span>
-                        <span class="hud-value" id="game-score">0s</span>
-                    </div>
-                    <div class="hud-item">
-                        <span class="hud-label">HEALTH</span>
-                        <span class="hud-value" id="game-health">100</span>
-                    </div>
-                    <div class="hud-item">
-                        <span class="hud-label">LEVEL</span>
-                        <span class="hud-value" id="game-level">1</span>
+
+            <div class="project-block" data-zone="1" data-project="1"
+                 data-title="2. Data Transmition Installation"
+                 data-subtitle="Physical Computing"
+                 data-description="In this installation, students get to 'see' data transmission in action. LED strips act as traveling data packets, while LED matrices show how two devices share images—revealing how noise can distort or interrupt the conversation."
+                 data-media="dataTransmitionVideo"
+                 style="left: calc(100vw + (50vw - 90px)); bottom: 120px;">
+                <div class="block-icon">2</div>
+            </div>
+
+            <div class="project-block" data-zone="1" data-project="2"
+                 data-title="3. Pin Ball Goal!"
+                 data-subtitle="Physical Computing"
+                 data-description="This project began with a simple idea: create a game that two people can play while looking directly at each other. Along the way, we learned the foundations of physical computation—motors, buttons, and responsive systems—and built something playful that challenged us to stretch our creativity."
+                 data-media="pinBallGoalVideo"
+                 style="left: calc(100vw + (50vw + 10px)); bottom: 120px;">
+                <div class="block-icon">3</div>
+            </div>
+
+            <div class="platform ground-platform" data-zone="1"></div>
+            <!-- Platform obstacle in Projects -->
+            <div class="platform" data-zone="1" style="bottom: 130px; width: 300px;"></div>
+
+            <!-- ZONE 3: SIDE QUEST - CERRO PELADO (200vw - 300vw) -->
+            <div class="zone sidequest-zone" data-zone="2">
+                <h2 class="zone-title zone-hidden">🏔️ Side Quest: Sunrise Hiker</h2>
+                <p class="zone-text zone-hidden">Mountains I've Conquered</p>
+
+                <div class="zone-content zone-hidden">
+                    <p class="mountains-intro">There's something about waking up before dawn, hiking in the dark, and watching the world wake up from the summit. Here are three mountains that have become part of my story:</p>
+
+                    <!-- Mountain Cards Grid -->
+                    <div class="mountains-grid">
+                        <!-- Cerro Chirripó -->
+                        <div class="mountain-card">
+                            <div class="mountain-image">
+                                <img src="/img/chirripo.jpg" alt="Cerro Chirripó">
+                            </div>
+                            <div class="mountain-info">
+                                <h3 class="mountain-name">Cerro Chirripó</h3>
+                                <p class="mountain-description">The highest point in Costa Rica. A demanding multi-kilometer hike that passes through páramo landscapes, cloud forests, and views that feel almost otherworldly.</p>
+                            </div>
+                        </div>
+
+                        <!-- Volcán Arenal -->
+                        <div class="mountain-card">
+                            <div class="mountain-image">
+                                <video autoplay loop muted playsinline>
+                                    <source src="/img/arenal.mp4" type="video/mp4">
+                                </video>
+                            </div>
+                            <div class="mountain-info">
+                                <h3 class="mountain-name">Volcán Arenal</h3>
+                                <p class="mountain-description">An iconic volcano with an almost perfectly symmetrical shape. The hike around its base combines tropical rainforest, abundant wildlife, and views of old lava flows.</p>
+                            </div>
+                        </div>
+
+                        <!-- Cerro Pelado -->
+                        <div class="mountain-card">
+                            <div class="mountain-image">
+                                <img src="/img/cerropelado.jpg" alt="Cerro Pelado">
+                            </div>
+                            <div class="mountain-info">
+                                <h3 class="mountain-name">Cerro Pelado</h3>
+                                <p class="mountain-description">A mountain known for its strong winds and spectacular sunsets. The climb is short but steep, and the panoramic view at the top is incredible.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Game Screen -->
-                <div class="game-screen" id="game-screen">
-                    <canvas id="game-canvas" width="600" height="400"></canvas>
-                    <div class="game-start-overlay" id="game-start-overlay">
-                        <h3>PIXEL BLASTER</h3>
-                        <p>Survive as long as you can!</p>
-                        <p class="game-controls">◀ Move: Arrow Keys ▶</p>
-                        <p class="game-controls">Shoot: SPACE • Infinite Ammo!</p>
-                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Watch out for asteroids AND enemy ships!</p>
-                        <p style="font-size: 0.85rem; opacity: 0.8;">Asteroids: -10 HP • Enemy Bullets: -5 HP</p>
-                        <button class="btn-arcade btn-start-game" id="start-game-btn">Start Game</button>
-                    </div>
-                    <div class="game-over-overlay hidden" id="game-over-overlay">
-                        <h3>GAME OVER</h3>
-                        <p>Final Score: <span id="final-score">0</span></p>
-                        <button class="btn-arcade" id="restart-game-btn">Play Again</button>
+                <p class="coin-hint">Climb up and collect the coin! ↑</p>
+
+                <!-- Zone skip button -->
+                <button class="zone-skip-btn" data-target-zone="3">Skip to Contact →</button>
+            </div>
+
+            <div class="platform ground-platform zone-platform" data-zone="2"></div>
+            <!-- Platform staircase - Climbing the mountain (6 platforms) -->
+            <div class="platform zone-platform" data-zone="2" style="left: calc(200vw + 50px); bottom: 120px; width: 200px;"></div>
+            <div class="platform zone-platform" data-zone="2" style="left: calc(200vw + 280px); bottom: 200px; width: 180px;"></div>
+            <div class="platform zone-platform" data-zone="2" style="left: calc(200vw + 100px); bottom: 280px; width: 180px;"></div>
+            <div class="platform zone-platform" data-zone="2" style="left: calc(200vw + 300px); bottom: 360px; width: 180px;"></div>
+            <div class="platform zone-platform" data-zone="2" style="left: calc(200vw + 120px); bottom: 440px; width: 180px;"></div>
+            <div class="platform zone-platform" data-zone="2" style="left: calc(200vw + 320px); bottom: 520px; width: 200px;"></div>
+
+            <!-- Collectible Coin at the end of the 6th platform -->
+            <div class="collectible-coin" data-zone="2" style="left: calc(200vw + 480px); bottom: 600px;">
+                <div class="coin-spin">💰</div>
+            </div>
+
+            <!-- ZONE 4: CONTACT (300vw - 400vw) -->
+            <div class="zone contact-zone" data-zone="3">
+                <h2 class="zone-title">Get in Touch</h2>
+                <p class="zone-text">Let's collaborate!</p>
+                <div class="zone-content contact-info">
+                    <div class="contact-item">
+                        <span class="contact-icon">📧</span>
+                        <a href="mailto:pjmb18@gmail.com" class="contact-link">pjmb18@gmail.com</a>
                     </div>
                 </div>
+
+                <!-- Zone skip button - back to start -->
+                <button class="zone-skip-btn" data-target-zone="0">← Back to Start</button>
             </div>
+            <div class="platform ground-platform" data-zone="3"></div>
         </div>
     </section>
 
@@ -229,29 +202,10 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <div class="footer-grid">
-                <div class="footer-section">
-                    <h4>Game Over?</h4>
-                    <p>Not yet. Let's build something cosmic together.</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Connect</h4>
-                    <ul class="social-links">
-                        <li><a href="#">LinkedIn</a></li>
-                        <li><a href="#">GitHub</a></li>
-                        <li><a href="#">Email</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Credits</h4>
-                    <p>Designed & Developed by Pedro Matarrita</p>
-                    <p class="arcade-credits">© 2025 - Built with cosmic vibes</p>
-                </div>
-            </div>
+            <p>© 2025 Pedro Matarrita - V2</p>
         </div>
     </footer>
 
-    <script src="/scripts/game.js"></script>
     <script src="/scripts/main.js"></script>
 </body>
 </html>
